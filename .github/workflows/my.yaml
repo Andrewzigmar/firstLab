@@ -4,5 +4,14 @@ jobs: # список работ, которые будут производит�
  checks: # имя работы сhecks
  runs-on: ubuntu-latest # на какой машине делать работы (можно задать матрицы машин, допустимы Windows и Mac OS)
  steps: # выполняемые последовательно шаги
+ - name: Begin
  - uses: actions/checkout@v3
- - run: echo "hello world
+ - name: Echo hello
+ - run: echo "hello world"
+
+ - name: Setup Python
+   uses: actions/setup-python@v2
+   with:
+     python-version: "3.8"
+ - name: Install pipenv
+   run: python -m pip install pipenv
