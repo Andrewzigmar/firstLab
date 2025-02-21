@@ -10,7 +10,7 @@ uvicorn = "*"
 pytest = "*"
 jinja2 = "*"
 numpy = "*"
-Pillow = "*"
+anyio = "<=4.7.0"
 pillow = "*"
 
 [dev-packages]
