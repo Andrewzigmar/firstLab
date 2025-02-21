@@ -9,6 +9,7 @@ pydantic = "*"
 uvicorn = "*"
 pytest = "*"
 jinja2 = "*"
+Pillow = "*"
 numpy = "==2.0.2"
 
 [dev-packages]
