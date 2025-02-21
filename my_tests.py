@@ -1,4 +1,4 @@
-import firstlab
+import fastlab
 
 def test1():
- assert firstlab.sum_two_args(2,2) == 4
+ assert fastlab.sum_two_args(2,2) == 4
