@@ -9,10 +9,7 @@ pydantic = "*"
 uvicorn = "*"
 pytest = "*"
 jinja2 = "*"
-numpy = "*"
-anyio = "*"
-markupsafe = "*"
-pillow = "*"
+numpy = "==2.0.2"
 
 [dev-packages]
 
