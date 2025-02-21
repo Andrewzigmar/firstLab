@@ -10,11 +10,11 @@ uvicorn = "*"
 pytest = "*"
 jinja2 = "*"
 numpy = "*"
-anyio = "<=4.5.2"
-markupsafe = "<=2.1.5"
+anyio = "*"
+markupsafe = "*"
 pillow = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.8"
+python_version = "3.9"
