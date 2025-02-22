@@ -10,6 +10,7 @@ uvicorn = "*"
 pytest = "*"
 jinja2 = "*"
 Pillow = "*"
+python-multipart = "*"
 numpy = "==2.0.2"
 
 [dev-packages]
