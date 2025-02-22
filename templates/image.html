@@ -1,21 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <meta charset="UTF-8">
- <title>Images</title>
- <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Image Page</title>
 </head>
 <body>
-<h1> Images </h1>
-<table>
- <tr>
- <td> Изображение static </td>
- <td> Изображение из буфера </td>
- </tr>
- <tr>
- <td> <img src = "{{ im_st }}"/> </td>
- <td> <img src = "{{ im_dyn }}"/> </td>
- </tr>
-</table>
+    <h1>Static Image</h1>
+    <img src="{{ im_st }}" alt="Static Image">
+    <h1>Dynamic Image</h1>
+    <img src="{{ im_dyn }}" alt="Dynamic Image">
 </body>
 </html>

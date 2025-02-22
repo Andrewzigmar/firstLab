@@ -9,8 +9,9 @@ pydantic = "*"
 uvicorn = "*"
 pytest = "*"
 jinja2 = "*"
-Pillow = "*"
+pillow = "*"
 python-multipart = "*"
+matplotlib = "*"
 numpy = "==2.0.2"
 
 [dev-packages]
