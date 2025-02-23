@@ -2,39 +2,41 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Обработка изображений</title>
+    <title>Форма с reCAPTCHA</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
     <h1>Загрузите изображения</h1>
-    <form action="/image_form" method="post" enctype="multipart/form-data">
+    <form method="post" action="/forms" enctype="multipart/form-data">
         <label for="function">Функция:</label>
-        <select name="function" id="function">
-            <option value="sin">sin</option>
-            <option value="cos">cos</option>
-        </select><br><br>
+        <select name="function" id="function" required>
+            <option value="sin">Sin</option>
+            <option value="cos">Cos</option>
+        </select>
+        <br>
         <label for="period">Период:</label>
-        <input type="number" name="period" id="period" step="0.1" required><br><br>
+        <input type="number" name="period" id="period" step="0.1" required>
+        <br>
         <label for="files">Изображения:</label>
-        <input type="file" name="files" id="files" multiple required><br><br>
+        <input type="file" name="files" id="files" multiple required>
+        <br>
+        <!-- reCAPTCHA -->
+        <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+        <br>
         <button type="submit">Отправить</button>
     </form>
 
     {% if images %}
-        <h2>Результаты обработки</h2>
+        <h2>Результаты</h2>
         {% for image in images %}
             <div>
-                <h3>Исходное изображение</h3>
-                <img src="{{ image.original }}" alt="Original Image" width="200">
-                <h4>Гистограмма</h4>
-                <img src="{{ image.original_histogram }}" alt="Original Histogram" width="400">
-            </div>
-            <div>
+                <h3>Оригинальное изображение</h3>
+                <img src="{{ image.original }}" alt="Оригинальное изображение">
+                <img src="{{ image.original_histogram }}" alt="Гистограмма оригинального изображения">
                 <h3>Обработанное изображение</h3>
-                <img src="{{ image.processed }}" alt="Processed Image" width="200">
-                <h4>Гистограмма</h4>
-                <img src="{{ image.processed_histogram }}" alt="Processed Histogram" width="400">
+                <img src="{{ image.processed }}" alt="Обработанное изображение">
+                <img src="{{ image.processed_histogram }}" alt="Гистограмма обработанного изображения">
             </div>
-            <hr>
         {% endfor %}
     {% endif %}
 </body>

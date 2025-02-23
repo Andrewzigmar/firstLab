@@ -13,6 +13,9 @@ pillow = "*"
 python-multipart = "*"
 matplotlib = "*"
 numpy = "==2.0.2"
+captcha = "*"
+httpx = "*"
+"google.cloud" = "*"
 
 [dev-packages]
 

@@ -1,19 +1,30 @@
 from fastapi import FastAPI, Request, Form, File, UploadFile, HTTPException
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from PIL import Image
 import numpy as np
 import io
-import os
 import uuid
 import matplotlib.pyplot as plt
 from typing import List
+import httpx
+import logging
+import os
+
+# Настройка логирования
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
+# Монтирование статических файлов
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
+
+# Ключи reCAPTCHA (замените на свои)
+RECAPTCHA_SITE_KEY = "6LcN1d8qAAAAADptWviC_Vi3Aq7oLg38gCLJ6Ru3"  # Ваш SITE_KEY
+RECAPTCHA_SECRET_KEY = "6LcN1d8qAAAAANp1TcYaCt01bLyg8gp-gEP1dGSH"  # Ваш SECRET_KEY
 
 def apply_periodic_function(image: Image.Image, function: str, period: float) -> Image.Image:
     """
@@ -65,33 +76,52 @@ def plot_color_distribution(image: Image.Image, title: str, filename: str):
     plt.savefig(filename)
     plt.close()
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+async def verify_recaptcha(token: str) -> bool:
+    """
+    Проверяет токен reCAPTCHA через API Google.
+    """
+    if not token:
+        logger.error("Токен reCAPTCHA отсутствует")
+        return False
+
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.post(
+                "https://www.google.com/recaptcha/api/siteverify",
+                data={"secret": RECAPTCHA_SECRET_KEY, "response": token}
+            )
+            result = response.json()
+            logger.info(f"Результат проверки reCAPTCHA: {result}")
+            return result.get("success", False)
+        except Exception as e:
+            logger.error(f"Ошибка при проверке reCAPTCHA: {e}")
+            return False
+
+@app.get("/", response_class=HTMLResponse)
+async def read_root(request: Request):
+    """
+    Главная страница.
+    """
+    return templates.TemplateResponse("index.html", {"request": request})
 
 @app.get("/forms", response_class=HTMLResponse)
 async def show_form(request: Request):
-    return templates.TemplateResponse("forms.html", {"request": request})
+    """
+    Отображает форму с reCAPTCHA.
+    """
+    return templates.TemplateResponse("forms.html", {"request": request, "recaptcha_site_key": RECAPTCHA_SITE_KEY})
 
-@app.post("/image_form", response_class=HTMLResponse)
+@app.post("/forms", response_class=HTMLResponse)
 async def process_image(
     request: Request,
     function: str = Form(),
     period: float = Form(),
-    files: List[UploadFile] = File(description="Multiple files as UploadFile"),
+    files: List[UploadFile] = File(...),
+    g_recaptcha_response: str = Form(None),  # Токен reCAPTCHA
 ):
-    if not files or not files[0].filename:
-        raise HTTPException(status_code=400, detail="Необходимо загрузить хотя бы одно изображение")
 
-    if function not in ["sin", "cos"]:
-        raise HTTPException(status_code=400, detail="Функция должна быть 'sin' или 'cos'")
-
-    if period <= 0:
-        raise HTTPException(status_code=400, detail="Период должен быть положительным числом")
 
     images = []
-    original_histograms = []
-    processed_histograms = []
 
     for file in files:
         try:
@@ -107,11 +137,9 @@ async def process_image(
             original_histogram_filename = f"static/{uuid.uuid4().hex}_original_histogram.png"
             processed_histogram_filename = f"static/{uuid.uuid4().hex}_processed_histogram.png"
 
-            # Сохраняем изображения
+            # Сохраняем изображения и графики
             original_image.save(original_filename)
             processed_image.save(processed_filename)
-
-            # Строим графики распределения цветов
             plot_color_distribution(original_image, "Распределение цветов (исходное)", original_histogram_filename)
             plot_color_distribution(processed_image, "Распределение цветов (обработанное)", processed_histogram_filename)
 
@@ -122,6 +150,7 @@ async def process_image(
                 "processed_histogram": processed_histogram_filename,
             })
         except Exception as e:
+            logger.error(f"Ошибка обработки файла {file.filename}: {e}")
             raise HTTPException(status_code=400, detail=f"Ошибка обработки файла {file.filename}: {str(e)}")
 
     return templates.TemplateResponse("forms.html", {
