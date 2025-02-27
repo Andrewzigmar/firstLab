@@ -22,9 +22,9 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-# Ключи reCAPTCHA (замените на свои)
-RECAPTCHA_SITE_KEY = "6LcN1d8qAAAAADptWviC_Vi3Aq7oLg38gCLJ6Ru3"  # Ваш SITE_KEY
-RECAPTCHA_SECRET_KEY = "6LcN1d8qAAAAANp1TcYaCt01bLyg8gp-gEP1dGSH"  # Ваш SECRET_KEY
+
+RECAPTCHA_SITE_KEY = "6LcN1d8qAAAAADptWviC_Vi3Aq7oLg38gCLJ6Ru3"
+RECAPTCHA_SECRET_KEY = "6LcN1d8qAAAAANp1TcYaCt01bLyg8gp-gEP1dGSH"
 
 def apply_periodic_function(image: Image.Image, function: str, period: float) -> Image.Image:
     """
